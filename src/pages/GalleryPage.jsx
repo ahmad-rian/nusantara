@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, ZoomIn, Filter, Search, Heart, Share2, Download,
-  MapPin, Camera, Calendar, Eye, Tag, ChevronDown, Menu
+  MapPin, Camera, Calendar, Eye, Tag, ChevronDown
 } from 'lucide-react';
 
 const GalleryPage = () => {
@@ -11,7 +10,6 @@ const GalleryPage = () => {
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [likedImages, setLikedImages] = useState(new Set());
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Filter categories with icons
   const filters = [
@@ -113,7 +111,7 @@ const GalleryPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div>
       {/* Hero Section with parallax effect */}
       <section className="relative h-screen overflow-hidden">
         <motion.div
@@ -145,7 +143,7 @@ const GalleryPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6"
+              className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6"
             >
               Nusantara Gallery
             </motion.h1>
@@ -153,7 +151,8 @@ const GalleryPage = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="text-lg md:text-xl text-white/80 max-w-3xl mx-auto"
+              className="text-xl md:text-2xl text-white/80 max-w-3xl mx-auto"
+              
             >
               Discover the beauty of nature and cultural wealth of Indonesia through stunning visuals
             </motion.p>
@@ -177,7 +176,7 @@ const GalleryPage = () => {
       </section>
 
       {/* Search and Filter Section */}
-      <section className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200">
+      <section className="sticky top-20 z-30 bg-white/80 backdrop-blur-md border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
             {/* Search Bar with animation */}
@@ -197,18 +196,8 @@ const GalleryPage = () => {
               />
             </motion.div>
             
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="p-2 rounded-md bg-gray-200 text-gray-600"
-              >
-                <Menu size={24} />
-              </button>
-            </div>
-
-            {/* Filters with icons - Desktop */}
-            <div className="hidden md:flex overflow-x-auto space-x-2 pb-2 md:pb-0 scrollbar-hide">
+            {/* Filters with icons */}
+            <div className="flex overflow-x-auto space-x-2 pb-2 md:pb-0 scrollbar-hide">
               {filters.map((filter, index) => (
                 <motion.button
                   key={filter.id}
@@ -228,38 +217,6 @@ const GalleryPage = () => {
               ))}
             </div>
           </div>
-
-          {/* Mobile Menu */}
-          <AnimatePresence>
-            {isMenuOpen && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="md:hidden mt-4"
-              >
-                <div className="flex flex-col space-y-2">
-                  {filters.map((filter, index) => (
-                    <button
-                      key={filter.id}
-                      onClick={() => {
-                        setActiveFilter(filter.id);
-                        setIsMenuOpen(false);
-                      }}
-                      className={`flex items-center px-4 py-2 rounded-md text-sm font-medium ${
-                        activeFilter === filter.id
-                          ? 'bg-gradient-to-r from-[#1E40AF] to-[#15803D] text-white'
-                          : 'bg-gray-100 text-gray-600'
-                      }`}
-                    >
-                      <span className="mr-2">{filter.icon}</span>
-                      {filter.label}
-                    </button>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 
@@ -274,7 +231,7 @@ const GalleryPage = () => {
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           >
             <AnimatePresence mode="popLayout">
               {filteredGallery.map((item, index) => (
@@ -299,81 +256,57 @@ const GalleryPage = () => {
                         <h3 className="text-white text-xl font-bold mb-2">
                           {item.title}
                         </h3>
-                        <p className="text-gray-300 text-sm">{item.description}</p>
-                        <div className="mt-4 flex items-center space-x-4">
-                          <button
-                            onClick={(e) => handleLikeImage(item.id, e)}
-                            className="text-white hover:text-red-500"
-                          >
-                            <Heart
-                              size={20}
-                              className={`transition-all duration-300 ${
-                                likedImages.has(item.id) ? 'text-red-500' : ''
-                              }`}
-                            />
-                          </button>
-                          <button
-                            onClick={(e) => handleShare(item, e)}
-                            className="text-white hover:text-blue-500"
-                          >
-                            <Share2 size={20} />
-                          </button>
-                          <button
-                            onClick={(e) => handleDownload(item, e)}
-                            className="text-white hover:text-green-500"
-                          >
-                            <Download size={20} />
-                          </button>
+                        <p className="text-gray-300 mb-2">
+                          {item.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {item.tags.map((tag, idx) => (
+                            <span 
+                              key={idx}
+                              className="text-xs px-2 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
                         </div>
                       </div>
+                    </div>
+                    {/* Additional Info Overlays */}
+                    <div className="absolute top-4 right-4 flex space-x-2">
+                      <button 
+                        onClick={(e) => handleLikeImage(item.id, e)}
+                        className={`p-2 rounded-full backdrop-blur-sm transition-all ${
+                          likedImages.has(item.id)
+                            ? 'bg-red-500 text-white'
+                            : 'bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white'
+                        }`}
+                      >
+                        <Heart size={20} />
+                      </button>
+                    </div>
+                    <div className="absolute top-4 left-4 flex items-center space-x-2">
+                      <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm text-gray-600">
+                        {item.location}
+                      </span>
                     </div>
                   </div>
                 </motion.div>
               ))}
             </AnimatePresence>
           </motion.div>
+
+          {/* Empty State */}
+          {filteredGallery.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <p className="text-gray-600">No galleries found</p>
+            </motion.div>
+          )}
         </div>
       </section>
-
-      {/* Image Modal for selected image */}
-      {selectedImage && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-          onClick={() => setSelectedImage(null)}
-        >
-          <motion.div
-            initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.8 }}
-            className="bg-white rounded-xl overflow-hidden max-w-3xl mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="w-full h-full object-cover"
-            />
-            <div className="p-6">
-              <h3 className="text-xl font-bold mb-2">{selectedImage.title}</h3>
-              <p className="text-gray-600 text-sm mb-4">{selectedImage.description}</p>
-              <div className="space-y-2">
-                {selectedImage.details.map((detail, idx) => (
-                  <p key={idx} className="text-gray-500 text-sm">{detail}</p>
-                ))}
-              </div>
-              <button
-                onClick={() => setSelectedImage(null)}
-                className="mt-6 inline-flex items-center justify-center px-6 py-2 bg-[#1E40AF] text-white rounded-md"
-              >
-                Close
-              </button>
-            </div>
-          </motion.div>
-        </motion.div>
-      )}
     </div>
   );
 };
