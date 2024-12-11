@@ -40,36 +40,6 @@ const GallerySection = ({ preview = false }) => {
       tags: ["laut", "diving", "wisata"],
       photographer: "Mike Johnson"
     },
-    {
-      id: 4,
-      image: "https://cdn.pixabay.com/photo/2023/03/04/14/09/gamelan-7829629_1280.jpg",
-      title: "Gamelan Jawa",
-      category: "Seni Musik",
-      description: "Harmoni warisan leluhur",
-      location: "Yogyakarta",
-      tags: ["musik", "tradisi", "budaya"],
-      photographer: "Sarah Lee"
-    },
-    {
-      id: 5,
-      image: "https://images.unsplash.com/photo-1628413732934-95eff1b87770?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGthcGFsJTIwcGluaXNpfGVufDB8fDB8fHww",
-      title: "Kapal Pinisi",
-      category: "Maritim",
-      description: "Kejayaan bahari Nusantara",
-      location: "Sulawesi Selatan",
-      tags: ["kapal", "bahari", "tradisi"],
-      photographer: "David Kim"
-    },
-    {
-      id: 6,
-      image: "https://images.unsplash.com/photo-1681003564665-62848f8d481e?q=80&w=3472&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      title: "Batik Indonesia",
-      category: "Kerajinan",
-      description: "Warisan budaya dunia",
-      location: "Solo",
-      tags: ["batik", "unesco", "budaya"],
-      photographer: "Linda Chen"
-    },
     
   ];
 
