@@ -1,19 +1,23 @@
-
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  X, ZoomIn, Filter, Search, Heart, Share2, Download,
-  MapPin, Camera, Calendar, Eye, Tag, Info, ChevronDown,
-  Users, Globe
+  X,  Search, Heart, Share2, Download,
+  MapPin, Eye, Tag, Info, 
+   Globe, Loader
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const GalleryPage = () => {
   const { isDark } = useTheme();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isImagesLoaded, setIsImagesLoaded] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [activeFilter, setActiveFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
-  const [likedImages, setLikedImages] = useState(new Set());
+  const [likedImages, setLikedImages] = useState(() => {
+    const saved = localStorage.getItem('likedImages');
+    return new Set(saved ? JSON.parse(saved) : []);
+  });
 
   const filters = [
     { id: 'all', label: 'Semua', icon: <Eye size={18} /> },
@@ -48,7 +52,7 @@ const GalleryPage = () => {
       image: 'https://i.pinimg.com/736x/82/35/04/823504c09bc9d9477c97cb0de64e23f8.jpg',
       title: 'Candi Borobudur',
       description: 'Candi Buddha terbesar di dunia',
-      location: 'Magelang, Jawa Tengah',
+      location: 'Magelang, Jawa Tengah', 
       photographer: 'Budi Santoso',
       date: '2024-01-20',
       views: 2500,
@@ -161,7 +165,33 @@ const GalleryPage = () => {
         'Usia tradisi: >1000 tahun'
       ]
     }
-];
+  ];
+
+  // Save liked images to localStorage
+  useEffect(() => {
+    localStorage.setItem('likedImages', JSON.stringify([...likedImages]));
+  }, [likedImages]);
+
+  // Image Preloading
+  useEffect(() => {
+    const heroImage = new Image();
+    heroImage.src = "https://images.unsplash.com/photo-1721136690199-a42036f31b70";
+    heroImage.onload = () => setIsLoading(false);
+    heroImage.onerror = () => setIsLoading(false);
+
+    const imagePromises = galleryItems.map(item => {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.src = item.image;
+        img.onload = resolve;
+        img.onerror = resolve;
+      });
+    });
+
+    Promise.all(imagePromises).then(() => {
+      setIsImagesLoaded(true);
+    });
+  }, []);
 
   const handleLikeImage = (id, e) => {
     e.stopPropagation();
@@ -178,13 +208,11 @@ const GalleryPage = () => {
 
   const handleShare = (item, e) => {
     e.stopPropagation();
-    // Implement share functionality
     console.log('Berbagi:', item.title);
   };
 
   const handleDownload = (item, e) => {
     e.stopPropagation();
-    // Implement download functionality
     console.log('Mengunduh:', item.title);
   };
 
@@ -199,6 +227,21 @@ const GalleryPage = () => {
     
     return matchesFilter && matchesSearch;
   });
+
+  if (isLoading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${
+        isDark ? 'bg-gray-900' : 'bg-white'
+      }`}>
+        <div className="flex flex-col items-center space-y-4">
+          <Loader className="w-10 h-10 animate-spin text-blue-600" />
+          <p className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            Memuat Galeri...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-white'}`}>
@@ -327,213 +370,270 @@ const GalleryPage = () => {
         }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            layout
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
-          >
-            <AnimatePresence mode="popLayout">
-              {filteredGallery.map((item) => (
-                <motion.div
-                  key={item.id}
-                  layout
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.5 }}
-                  className="group relative cursor-pointer"
-                  onClick={() => setSelectedImage(item)}
-                >
-                  <div className={`relative overflow-hidden rounded-xl ${
+          {!isImagesLoaded ? (
+            // Skeleton loading
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+              {[...Array(6)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`rounded-xl aspect-[4/3] animate-pulse ${
                     isDark ? 'bg-gray-800' : 'bg-gray-200'
-                  } shadow-lg`}>
-                    <img 
-                      src={item.image}
-                      alt={item.title}
-                      className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-110"
-                    />
+                  }`}
+                />
+              ))}
+            </div>
+          ) : (
+            <motion.div 
+              layout
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8"
+            >
+              <AnimatePresence mode="popLayout">
+                {filteredGallery.map((item) => (
+                  <motion.div
+                    key={item.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.5 }}
+                    className="group relative cursor-pointer"
+                    onClick={() => setSelectedImage(item)}
+                  >
+                    <div className={`relative overflow-hidden rounded-xl ${
+                      isDark ? 'bg-gray-800' : 'bg-gray-200'
+                    } shadow-lg`}>
+                      <img 
+                        src={item.image}
+                        alt={item.title}
+                        className="w-full aspect-[4/3] object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
 
-<div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-  <div className="absolute bottom-0 p-6">
-    <h3 className="text-white text-xl font-bold mb-2">
-      {item.title}
-    </h3>
-    <p className="text-gray-300 mb-2">
-      {item.description}
-    </p>
-    <div className="flex flex-wrap gap-2">
-      {item.tags.map((tag, idx) => (
-        <span 
-          key={idx}
-          className="text-xs px-2 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full"
-        >
-          #{tag}
-        </span>
-      ))}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-0 p-6">
+                          <h3 className="text-white text-xl font-bold mb-2">
+                            {item.title}
+                          </h3>
+                          <p className="text-gray-300 mb-2">
+                            {item.description}
+                          </p>
+                          <div className="flex flex-wrap gap-2">
+                            {item.tags.map((tag, idx) => (
+                              <span 
+                                key={idx}
+                                className="text-xs px-2 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Action Buttons */}
+                      <div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={(e) => handleLikeImage(item.id, e)}
+                          className={`p-2 rounded-full backdrop-blur-sm transition-all ${
+                            likedImages.has(item.id)
+                              ? 'bg-red-500 text-white'
+                              : 'bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white'
+                          }`}
+                        >
+                          <Heart size={20} />
+                        </button>
+                        <button 
+                          onClick={(e) => handleShare(item, e)}
+                          className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-600 hover:text-primary transition-colors"
+                        >
+                          <Share2 size={20} />
+                        </button>
+                      </div>
+
+                      {/* Location Badge */}
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm text-gray-600">
+                          {item.location}
+                        </span>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </motion.div>
+          )}
+
+          {/* Empty State */}
+          {filteredGallery.length === 0 && isImagesLoaded && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
+                <Search size={32} className="text-gray-400" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                Tidak ada galeri ditemukan
+              </h3>
+              <p className="text-gray-600">
+                Coba gunakan kata kunci pencarian yang berbeda
+              </p>
+            </motion.div>
+          )}
+        </div>
+      </section>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
+            onClick={() => setSelectedImage(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-5xl w-full rounded-xl overflow-hidden bg-white dark:bg-gray-900"
+              onClick={e => e.stopPropagation()}
+            >
+              {/* Close Button */}
+              <button
+                className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
+                onClick={() => setSelectedImage(null)}
+              >
+                <X size={24} />
+              </button>
+
+              <div className="relative">
+                <img
+                  src={selectedImage.image}
+                  alt={selectedImage.title}
+                  className="w-full rounded-t-xl"
+                />
+                <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                  <h3 className="text-2xl font-bold text-white mb-2">
+                    {selectedImage.title}
+                  </h3>
+                  <p className="text-gray-300 mb-4">
+                    {selectedImage.description}
+                  </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center text-gray-300">
+                      <MapPin size={16} className="mr-1" />
+                      {selectedImage.location}
+                    </div>
+                    <div className="flex space-x-4">
+                      {/* Action Buttons */}
+                      <button 
+                        onClick={(e) => handleLikeImage(selectedImage.id, e)}
+                        className={`text-white hover:text-red-500 transition-colors ${
+                          likedImages.has(selectedImage.id) ? 'text-red-500' : ''
+                        }`}
+                      >
+                        <Heart size={20} />
+                      </button>
+                      <button 
+                        onClick={(e) => handleShare(selectedImage, e)}
+                        className="text-white hover:text-primary transition-colors"
+                      >
+                        <Share2 size={20} />
+                      </button>
+                      <button 
+                        onClick={(e) => handleDownload(selectedImage, e)}
+                        className="text-white hover:text-primary transition-colors"
+                      >
+                        <Download size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional Info */}
+              <div className="p-6">
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {selectedImage.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Details */}
+                {selectedImage.details && (
+                  <div className="space-y-2">
+                    {selectedImage.details.map((detail, idx) => (
+                      <div key={idx} className="flex items-center text-gray-600 dark:text-gray-400">
+                        <Info size={16} className="mr-2 text-primary" />
+                        {detail}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Photographer Info */}
+                <div className="mt-4 flex items-center justify-between text-gray-600 dark:text-gray-400 text-sm">
+                  <span>Fotografer: {selectedImage.photographer}</span>
+                  <span>Diambil: {selectedImage.date}</span>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
-  </div>
-</div>
-
-{/* Action Buttons */}
-<div className="absolute top-4 right-4 flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-  <button 
-    onClick={(e) => handleLikeImage(item.id, e)}
-    className={`p-2 rounded-full backdrop-blur-sm transition-all ${
-      likedImages.has(item.id)
-        ? 'bg-red-500 text-white'
-        : 'bg-white/90 text-gray-600 hover:bg-red-500 hover:text-white'
-    }`}
-  >
-    <Heart size={20} />
-  </button>
-  <button 
-    onClick={(e) => handleShare(item, e)}
-    className="p-2 rounded-full bg-white/90 backdrop-blur-sm text-gray-600 hover:text-primary transition-colors"
-  >
-    <Share2 size={20} />
-  </button>
-</div>
-
-{/* Location Badge */}
-<div className="absolute top-4 left-4">
-  <span className="px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-sm text-gray-600">
-    {item.location}
-  </span>
-</div>
-</div>
-</motion.div>
-))}
-</AnimatePresence>
-</motion.div>
-
-{/* Empty State */}
-{filteredGallery.length === 0 && (
-<motion.div
-initial={{ opacity: 0 }}
-animate={{ opacity: 1 }}
-className="text-center py-12"
->
-<div className="inline-block p-4 rounded-full bg-gray-100 mb-4">
-<Search size={32} className="text-gray-400" />
-</div>
-<h3 className="text-lg font-medium text-gray-900 mb-2">
-Tidak ada galeri ditemukan
-</h3>
-<p className="text-gray-600">
-Coba gunakan kata kunci pencarian yang berbeda
-</p>
-</motion.div>
-)}
-</div>
-</section>
-
-{/* Image Modal */}
-<AnimatePresence>
-{selectedImage && (
-<motion.div
-initial={{ opacity: 0 }}
-animate={{ opacity: 1 }}
-exit={{ opacity: 0 }}
-className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
-onClick={() => setSelectedImage(null)}
->
-<motion.div
-initial={{ scale: 0.9, opacity: 0 }}
-animate={{ scale: 1, opacity: 1 }}
-exit={{ scale: 0.9, opacity: 0 }}
-className="relative max-w-5xl w-full rounded-xl overflow-hidden bg-white dark:bg-gray-900"
-onClick={e => e.stopPropagation()}
->
-{/* Close Button */}
-<button
-className="absolute top-4 right-4 text-white hover:text-gray-300 transition-colors z-10"
-onClick={() => setSelectedImage(null)}
->
-<X size={24} />
-</button>
-
-<div className="relative">
-<img
-src={selectedImage.image}
-alt={selectedImage.title}
-className="w-full rounded-t-xl"
-/>
-<div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-<h3 className="text-2xl font-bold text-white mb-2">
-{selectedImage.title}
-</h3>
-<p className="text-gray-300 mb-4">
-{selectedImage.description}
-</p>
-<div className="flex items-center justify-between">
-<div className="flex items-center text-gray-300">
-  <MapPin size={16} className="mr-1" />
-  {selectedImage.location}
-</div>
-<div className="flex space-x-4">
-  {/* Action Buttons */}
-  <button 
-    onClick={(e) => handleLikeImage(selectedImage.id, e)}
-    className={`text-white hover:text-red-500 transition-colors ${
-      likedImages.has(selectedImage.id) ? 'text-red-500' : ''
-    }`}
-  >
-    <Heart size={20} />
-  </button>
-  <button 
-    onClick={(e) => handleShare(selectedImage, e)}
-    className="text-white hover:text-primary transition-colors"
-  >
-    <Share2 size={20} />
-  </button>
-  <button 
-    onClick={(e) => handleDownload(selectedImage, e)}
-    className="text-white hover:text-primary transition-colors"
-  >
-    <Download size={20} />
-  </button>
-</div>
-</div>
-</div>
-</div>
-
-{/* Additional Info */}
-<div className="p-6">
-{/* Tags */}
-<div className="flex flex-wrap gap-2 mb-4">
-{selectedImage.tags.map((tag, idx) => (
-<span
-  key={idx}
-  className="text-xs px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full"
->
-  #{tag}
-</span>
-))}
-</div>
-
-{/* Details */}
-{selectedImage.details && (
-<div className="space-y-2">
-{selectedImage.details.map((detail, idx) => (
-  <div key={idx} className="flex items-center text-gray-600 dark:text-gray-400">
-    <Info size={16} className="mr-2 text-primary" />
-    {detail}
-  </div>
-))}
-</div>
-)}
-
-{/* Photographer Info */}
-<div className="mt-4 flex items-center justify-between text-gray-600 dark:text-gray-400 text-sm">
-<span>Fotografer: {selectedImage.photographer}</span>
-<span>Diambil: {selectedImage.date}</span>
-</div>
-</div>
-</motion.div>
-</motion.div>
-)}
-</AnimatePresence>
-</div>
-);
+  );
 };
 
-export default GalleryPage;
+// Error Boundary
+class GalleryErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-100">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              Terjadi Kesalahan
+            </h2>
+            <p className="text-gray-600 mb-4">
+              Mohon muat ulang halaman
+            </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+            >
+              Muat Ulang
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
+
+export default function GalleryPageWithErrorBoundary() {
+  return (
+    <GalleryErrorBoundary>
+      <GalleryPage />
+      </GalleryErrorBoundary>
+  );
+}
