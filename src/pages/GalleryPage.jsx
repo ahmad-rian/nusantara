@@ -270,7 +270,7 @@ const GalleryPage = () => {
               transition={{ duration: 0.6 }}
               className="mb-6"
             >
-              <span className="font-javanese text-4xl text-white/90">ꦒꦭꦺꦫꦶ</span>
+              <span className="font-javanese text-4xl text-primary">ꦒꦭꦺꦫꦶ</span>
             </motion.div>
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -296,6 +296,10 @@ const GalleryPage = () => {
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           animate={{ y: [0, 10, 0] }}
           transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          onClick={() => window.scrollTo({
+            top: window.innerHeight,
+            behavior: 'smooth'
+          })}
         >
           <div className="w-8 h-12 border-2 border-white/50 rounded-full flex justify-center backdrop-blur-sm">
             <div className="w-1 h-3 bg-white/80 rounded-full mt-2" />
