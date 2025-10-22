@@ -141,7 +141,7 @@ Aplikasi berjalan di `http://localhost:3000`
   <tr>
     <td align="center">
       <img src="https://via.placeholder.com/100" width="100px;" alt=""/><br />
-      <b>Nama Ketua</b><br />
+      <b>Ahmad Rian Syaifullah Ritonga</b><br />
       <sub>Full Stack Developer</sub>
     </td>
   </tr>
