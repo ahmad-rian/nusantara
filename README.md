@@ -134,19 +134,6 @@ Aplikasi berjalan di `http://localhost:3000`
 
 ---
 
-## 📊 Penilaian INVOFEST
-
-| Kriteria | Bobot | Status |
-|----------|-------|--------|
-| Tampilan & Design | 30% | ✅ Optimal |
-| Kreativitas & Inovasi | 25% | ✅ Excellent |
-| Originalitas | 20% | ✅ 100% Original |
-| UX & Responsivitas | 15% | ✅ Smooth |
-| Kesesuaian Tema | 10% | ✅ Sesuai |
-
-**Target Score: 95/100** 🎯
-
----
 
 ## 👥 Tim Pengembang
 
@@ -157,47 +144,21 @@ Aplikasi berjalan di `http://localhost:3000`
       <b>Nama Ketua</b><br />
       <sub>Full Stack Developer</sub>
     </td>
-    <td align="center">
-      <img src="https://via.placeholder.com/100" width="100px;" alt=""/><br />
-      <b>Anggota 1</b><br />
-      <sub>UI/UX Designer</sub>
-    </td>
-    <td align="center">
-      <img src="https://via.placeholder.com/100" width="100px;" alt=""/><br />
-      <b>Anggota 2</b><br />
-      <sub>Frontend Developer</sub>
-    </td>
   </tr>
 </table>
 
-**Institusi**: [Nama Universitas/Sekolah]  
-**Program Studi**: [Prodi]
+**Institusi**: Universitas Jenderal Soedirman
 
 ---
 
 ## 📞 Contact
 
-- **Email**: team.nusantara@email.com
-- **Instagram**: [@nusantara_azazel](https://instagram.com/nusantara_azazel)
+- **Email**: alriansr@gmail.com
+- **Instagram**: [@nusantara_azazel](https://instagram.com/rian_syaifullah)
 - **Website**: [nusantara-azazel.vercel.app](https://nusantara-azazel.vercel.app/)
 
 ---
 
-<div align="center">
-
-### 🏆 INVOFEST 2025 - Web Design Competition 🏆
-
-**"From Creation to Innovation"**
-
-*Melestarikan Warisan, Merangkai Inovasi*
-
----
-
-⭐ **Star this repo if you like it!** ⭐
-
-**Made with ❤️ by Nusantara Azazel Team**
-
-</div>
 
 ---
 
